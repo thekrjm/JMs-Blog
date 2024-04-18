@@ -1,8 +1,7 @@
-import MarkdownViewer from '@/components/MarkdownViewer';
+import AdjacentPostCard from '@/components/AdjacentPostCard';
 import PostContent from '@/components/PostContent';
 import { getPostData } from '@/service/Posts';
 import Image from 'next/image';
-import { FaRegCalendarAlt } from 'react-icons/fa';
 
 type Props = {
   params: { slug: string };
@@ -10,7 +9,7 @@ type Props = {
 
 const DetailPostPage = async ({ params: { slug } }: Props) => {
   const post = await getPostData(slug);
-  const { title, description, date, path, content } = post;
+  const { title, path, next, prev } = post;
   return (
     <article className='rounded-2xl overflow-hidden bg-gray-50 shadow-lg m-4'>
       <Image
@@ -21,6 +20,10 @@ const DetailPostPage = async ({ params: { slug } }: Props) => {
         height={420}
       />
       <PostContent post={post} />
+      <section className='flex shadow-md'>
+        {prev && <AdjacentPostCard post={prev} type='prev' />}
+        {next && <AdjacentPostCard post={next} type='next' />}
+      </section>
     </article>
   );
 };
