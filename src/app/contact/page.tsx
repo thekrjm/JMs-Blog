@@ -1,6 +1,11 @@
 import ContactForm from '@/components/ContactForm';
-import Link from 'next/link';
+import { Metadata } from 'next';
 import { AiFillGithub, AiFillYoutube, AiFillInstagram } from 'react-icons/ai';
+
+export const metadata: Metadata = {
+  title: 'Contact Me',
+  description: 'JM에게 메일 보내기',
+};
 
 const LINKS = [
   { icon: <AiFillGithub />, url: '' },
@@ -11,7 +16,7 @@ const LINKS = [
 const ContactPage = () => {
   return (
     <section className="flex flex-col items-center">
-      <h3 className="text-2xl font-bold my-2">Conact Me</h3>
+      <h2 className="text-3xl font-bold my-2">Contact Me</h2>
       <p>thekrjm@naver.com</p>
       <ul className="flex gap-4 my-2">
         {LINKS.map((link, index) => (

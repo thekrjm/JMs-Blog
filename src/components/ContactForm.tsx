@@ -2,19 +2,22 @@
 
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import Banner, { BannerData } from '../../Banner';
+import { sendContactEmail } from '@/service/contact';
 
 type FormData = {
   from: string;
-  title: string;
-  content: string;
+  subject: string;
+  message: string;
+};
+
+const DEFAULT_DATA = {
+  from: '',
+  subject: '',
+  message: '',
 };
 
 const ContactForm = () => {
-  const [form, setForm] = useState<FormData>({
-    from: '',
-    title: '',
-    content: '',
-  });
+  const [form, setForm] = useState<FormData>(DEFAULT_DATA);
 
   const [banner, setBanner] = useState<BannerData | null>(null);
 
@@ -27,45 +30,69 @@ const ContactForm = () => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('form', form);
-    setBanner({ message: '발송을 성공했습니다!', state: 'success' });
-    setTimeout(() => setBanner(null), 3000);
+    sendContactEmail(form) //이메일 발송요청
+      .then(() => {
+        setBanner({ message: '발송을 성공했습니다.', state: 'success' });
+        setForm(DEFAULT_DATA);
+      })
+      .catch(() => {
+        setBanner({ message: '메일전송을 실패했습니다.', state: 'error' });
+      })
+      .finally(() => {
+        setTimeout(() => setBanner(null), 3000);
+      });
   };
 
   return (
-    <section>
-      <form className="flex flex-col items-center" onSubmit={onSubmit}>
-        {banner && <Banner banner={banner} />}
-        <label htmlFor="from">Your Email</label>
+    <section className="w-full max-w-md ">
+      {banner && <Banner banner={banner} />}
+      <form
+        className="w-full max-w-md flex flex-col gap-2 my-4 p-4 bg-slate-700 rounded-xl text-white"
+        onSubmit={onSubmit}
+      >
+        <label htmlFor="from" className="font-semibold">
+          Your Email
+        </label>
         <input
-          type="text"
+          type="email"
           id="from"
           name="from"
           value={form.from}
           onChange={onChangeText}
           required
           autoFocus
+          className="text-black"
         />
-        <label htmlFor="from" className="font-bold">
-          title
+        <label htmlFor="subject" className="font-semibold">
+          Subject
         </label>
         <input
           type="text"
-          id="title"
-          name="title"
-          value={form.title}
+          id="subject"
+          name="subject"
+          value={form.subject}
           onChange={onChangeText}
           required
+          className="text-black"
         />
-        <label htmlFor="content">content</label>
+        <label htmlFor="message" className="font-semibold">
+          Message
+        </label>
         <textarea
-          id="content"
-          name="content"
-          value={form.content}
+          rows={10}
+          id="message"
+          name="message"
+          value={form.message}
           onChange={onChangeText}
           required
+          className="text-black"
         />
-        <button type="submit">Submit</button>
+        <button
+          type="submit"
+          className="bg-yellow-300 text-black font-bold hover:bg-yellow-400"
+        >
+          Submit
+        </button>
       </form>
     </section>
   );
